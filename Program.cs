@@ -1,147 +1,142 @@
-﻿using System;
-
-namespace ConsoleApp13
+namespace ConsoleApp13._1
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            IBook book1 = new Book("Book 1", "Author 1");
-            book1.SetPublicationDate(new DateTime(2022, 1, 1));
-            book1.SetPages(100);
+            Book<string> book1 = new Book<string>();
+            book1.SetTitle("Олдос Хаксли");
+            book1.SetAuthor("О дивный новый мир!");
+            book1.SetPublicationDate("01.01.1932");
 
-            IBook book2 = new Book("Book 2", "Author 2");
-            book2.SetPublicationDate(DateTime.Parse("2022-01-02"));
-            book2.SetPages(200);
+            Book<int> book2 = new Book<int>();
+            book2.SetTitle("Олдос Хаксли");
+            book2.SetAuthor("О дивный новый мир!");
+            book2.SetPublicationDate(01011932);
 
-            IUser user1 = new User("user1", "password1");
-            IUser user2 = new User("user2", "1234");
+            User<int> user1 = new User<int>();
+            user1.SetLogin(123);
+            user1.SetPassword("Hello!");
 
-            IProductUser productUser = new ProductUser("Book 1", 10.0M, user1);
+            User<string> user2 = new User<string>();
+            user2.SetLogin("12345");
+            user2.SetPassword("World!");
+
+            ProductUser<int> productUser = new ProductUser<int>();
+            productUser.SetTitle("Сияние");
+            productUser.SetAuthor("Стивен Кинг");
+            productUser.SetLogin(123);
+            productUser.SetPassword("pop");
             productUser.Buy();
         }
     }
 
-    public interface IPublisher
+    interface IPublisher
     {
         void SetTitle(string title);
         void SetAuthor(string author);
-        string GetTitle();
-        string GetAuthor();
     }
 
-
-    public interface IBook : IPublisher
+    interface IBook<T> : IPublisher
     {
-        DateTime PublicationDate { get; set; }
-        int Pages { get; set; }
-        void SetPublicationDate(DateTime date);
-        void SetPages(int pages);
+        void SetPublicationDate(T publicationDate);
+        void SetPageCount(int pageCount);
+    }
+    
+    interface IUser<T>
+    {
+        void SetLogin(T login);
+        void SetPassword(string password);
     }
 
-    public interface IUser
+    class Book<T> : IBook<T>
     {
-        object Login { get; set; }
-        object Password { get; set; }
-    }
-
-    public interface IProduct
-    {
-        void Buy();
-    }
-
-    public class Book : IBook
-    {
-        public string Title { get; set; }
-        public string Author { get; set; }
-        public DateTime PublicationDate { get; set; }
-        public int Pages { get; set; }
-
-        public Book(string title, string author)
-        {
-            Title = title;
-            Author = author;
-        }
-
-        public Book(string title, string author, DateTime publicationDate, int pages)
-        {
-            Title = title;
-            Author = author;
-            PublicationDate = publicationDate;
-            Pages = pages;
-        }
+        private string title;
+        private string author;
+        private T publicationDate;
+        private int pageCount;
 
         public void SetTitle(string title)
         {
-            Title = title;
+            this.title = title;
         }
 
         public void SetAuthor(string author)
         {
-            Author = author;
+            this.author = author;
         }
 
-        public string GetTitle()
+        public void SetPublicationDate(T publicationDate)
         {
-            return Title;
+            this.publicationDate = publicationDate;
         }
 
-        public string GetAuthor()
+        public void SetPageCount(int pageCount)
         {
-            return Author;
+            this.pageCount = pageCount;
         }
 
-        public void SetPublicationDate(DateTime date)
+        public void DisplayBookInfo()
         {
-            PublicationDate = date;
-        }
-
-        public void SetPages(int pages)
-        {
-            Pages = pages;
-        }
-
-        public DateTime GetPublicationDate()
-        {
-            return PublicationDate;
-        }
-
-        public int GetPages()
-        {
-            return Pages;
+            Console.WriteLine($"Название: {title}");
+            Console.WriteLine($"Автор: {author}");
+            Console.WriteLine($"Дата публикации: {publicationDate}");
+            Console.WriteLine($"Количество страницt: {pageCount}");
         }
     }
 
-    public class User : IUser
+    class User<T> : IUser<T>
     {
-        public object Login { get; set; }
-        public object Password { get; set; }
+        private T login;
+        private string password;
 
-        public User(object login, object password)
+        public void SetLogin(T login)
         {
-            Login = login;
-            Password = password;
+            this.login = login;
+        }
+
+        public void SetPassword(string password)
+        {
+            this.password = password;
+        }
+
+        public void InfoAccounts()
+        {
+            Console.WriteLine($"Login: {login}");
+            Console.WriteLine($"Password: {password}");
         }
     }
 
-    public interface IProductUser : IProduct
+    class ProductUser<T> : IUser<T>, IPublisher
     {
-        IUser User { get; set; }
-    }
+        private T login;
+        private string password;
+        private string title;
+        private string author;
 
-    public class ProductUser : IProductUser
-    {
-        public string Name { get; set; }
-        public decimal Price { get; set; }
-        public IUser User { get; set; }
-
-        public ProductUser(string name, decimal price, IUser user)
+        public void SetLogin(T login)
         {
-            Name = name;
-            Price = price;
-            User = user;
+            this.login = login;
         }
 
-        public void Buy() => Console.WriteLine($"{User.Login} купил {Name}");
+        public void SetPassword(string password)
+        {
+            this.password = password;
+        }
+
+        public void SetTitle(string title)
+        {
+            this.title = title;
+        }
+
+        public void SetAuthor(string author)
+        {
+            this.author = author;
+        }
+
+        public void Buy()
+        {
+            Console.WriteLine($"Пользователь {login} купил книгу - {title}, автор {author}");
+        }
     }
 }
